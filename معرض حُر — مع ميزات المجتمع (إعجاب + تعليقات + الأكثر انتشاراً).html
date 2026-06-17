@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#07070f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="معرض حُر">
+<meta name="description" content="مكتبة البرومتات السينمائية الإبداعية">
+<title>معرض حُر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a227;--gold-l:#f5d06a;--gold-d:rgba(201,162,39,.12);--gold-glow:rgba(201,162,39,.3);
+  --ink:#07070f;--ink-1:#0d0d18;--ink-2:#121220;--ink-3:#1a1a2a;
+  --border:rgba(255,255,255,.07);--border-gold:rgba(201,162,39,.25);
+  --text:#e4e4ef;--text-dim:#7a7a8c;--text-soft:#b0b0c0;
+  --r:14px;--r-lg:20px;--r-xl:28px;
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --ease-out:cubic-bezier(.22,1,.36,1);
+  --shadow-lg:0 24px 80px rgba(0,0,0,.7);
+  --shadow-card:0 4px 24px rgba(0,0,0,.4);
+  --red:#ef4444;--like:#ff5c5c;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Tajawal',system-ui,sans-serif;background:var(--ink);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{-webkit-user-drag:none;user-drag:none;display:block}
+button{font-family:inherit;cursor:pointer}
+input,textarea{font-family:inherit}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(201,162,39,.35)}
+::selection{background:rgba(201,162,39,.25);color:#fff}
+
+/* AMBIENT */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(140px);will-change:transform}
+.orb-a{width:600px;height:600px;top:-200px;right:-150px;background:radial-gradient(circle,rgba(201,162,39,.1) 0%,transparent 70%);animation:orbFloat 18s ease-in-out infinite}
+.orb-b{width:500px;height:500px;bottom:-180px;left:-120px;background:radial-gradient(circle,rgba(80,40,200,.08) 0%,transparent 70%);animation:orbFloat 24s ease-in-out infinite reverse}
+.orb-c{width:280px;height:280px;top:45%;right:30%;background:radial-gradient(circle,rgba(201,162,39,.05) 0%,transparent 70%);animation:orbFloat 14s ease-in-out infinite 4s}
+@keyframes orbFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-40px) scale(1.05)}}
+
+.glass{background:rgba(13,13,24,.85);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%)}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:100;background:rgba(7,7,15,.92);backdrop-filter:blur(32px) saturate(200%);-webkit-backdrop-filter:blur(32px) saturate(200%);border-bottom:1px solid var(--border);transition:box-shadow .3s}
+.header.scrolled{box-shadow:0 1px 40px rgba(0,0,0,.6)}
+.header-inner{max-width:1120px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:14px;text-decoration:none}
+.logo-mark{width:38px;height:38px;border-radius:50%;background:var(--ink-2);border:1.5px solid var(--border-gold);display:flex;align-items:center;justify-content:center;position:relative;transition:transform .3s var(--ease-spring)}
+.logo-mark::before{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(201,162,39,.08)}
+.logo-mark::after{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(201,162,39,.15) 0%,transparent 60%)}
+.logo:hover .logo-mark{transform:scale(1.08) rotate(5deg)}
+.logo-char{color:var(--gold);font-size:1rem;font-weight:300;font-style:italic;z-index:1}
+.logo-text h1{font-size:14px;font-weight:800;color:#fff;letter-spacing:.3px}
+.logo-text p{font-size:9px;color:var(--text-dim);margin-top:1px;font-weight:400}
+.header-actions{display:flex;align-items:center;gap:8px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:var(--r);font-weight:700;font-size:11.5px;transition:all .2s var(--ease-out);white-space:nowrap;position:relative;overflow:hidden}
+.btn::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 50%);transition:opacity .2s}
+.btn:hover::before{opacity:1}
+.btn:active{transform:scale(.95)}
+.btn-sm{padding:7px 14px;font-size:10.5px}
+.btn-md{padding:10px 18px}
+.btn-lg{padding:13px 28px;font-size:13px}
+.btn-gold{background:linear-gradient(135deg,var(--gold) 0%,var(--gold-l) 100%);color:var(--ink)}
+.btn-gold:hover{box-shadow:0 4px 20px rgba(201,162,39,.4);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim)}
+.btn-ghost:hover{border-color:var(--border-gold);color:var(--gold)}
+.btn-outline{background:var(--gold-d);border:1px solid var(--border-gold);color:var(--gold)}
+.btn-outline:hover{background:var(--gold);color:var(--ink)}
+.btn-danger{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#f87171}
+.btn-danger:hover{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5)}
+.btn-wa{background:#25D366;color:#fff;border:none}
+.btn-wa:hover{background:#1db954;box-shadow:0 4px 20px rgba(37,211,102,.3)}
+
+/* TABS */
+.main-tabs{position:sticky;top:62px;z-index:99;background:rgba(7,7,15,.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.tabs-inner{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs-inner::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;display:flex;align-items:center;gap:7px;padding:14px 20px;background:transparent;border:none;color:var(--text-dim);font-size:12px;font-weight:700;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap}
+.tab-btn:hover{color:var(--text-soft)}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-btn .tab-icon{font-size:14px}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:panelIn .4s var(--ease-out) both}
+@keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* HERO */
+.hero{text-align:center;padding:60px 24px 48px;position:relative;overflow:hidden}
+.hero-logo-wrap{position:relative;display:inline-block;margin-bottom:24px}
+.hero-glow{position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,rgba(201,162,39,.2) 0%,transparent 65%);animation:heroGlowPulse 3s ease-in-out infinite}
+@keyframes heroGlowPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+.hero-svg{filter:drop-shadow(0 0 24px rgba(201,162,39,.4));display:block}
+.hero-title{font-size:clamp(28px,5vw,42px);font-weight:900;color:#fff;letter-spacing:1px;animation:heroTextIn .7s var(--ease-out) .1s both}
+.hero-subtitle{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin:4px 0 8px;animation:heroTextIn .7s var(--ease-out) .2s both}
+.hero-desc{font-size:12px;color:var(--text-dim);line-height:1.7;max-width:420px;margin:0 auto 28px;animation:heroTextIn .7s var(--ease-out) .3s both}
+@keyframes heroTextIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.hero-divider{width:180px;height:1px;margin:32px auto 0;background:linear-gradient(90deg,transparent,rgba(201,162,39,.5),transparent)}
+
+/* ════ TRENDING SECTION ════ */
+.trending-section{margin-bottom:30px}
+.trending-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.trending-header h3{font-size:12px;font-weight:800;color:#fff;letter-spacing:.5px}
+.trending-header .fire{font-size:16px;animation:firePulse 1.2s ease-in-out infinite}
+@keyframes firePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.trending-bar{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.trending-bar::-webkit-scrollbar{display:none}
+.trending-chip{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;
+  padding:10px 14px;border-radius:14px;
+  background:var(--ink-1);border:1px solid var(--border);
+  cursor:pointer;transition:all .25s var(--ease-out);
+  max-width:220px;
+}
+.trending-chip:hover{border-color:rgba(201,162,39,.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.trending-rank{
+  width:22px;height:22px;border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:900;
+}
+.rank-1{background:linear-gradient(135deg,#f5d06a,#c9a227);color:#000}
+.rank-2{background:linear-gradient(135deg,#c0c0c0,#808080);color:#000}
+.rank-3{background:linear-gradient(135deg,#cd7f32,#8b4513);color:#fff}
+.rank-other{background:var(--ink-3);color:var(--text-dim)}
+.trending-chip-img{width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+.trending-chip-info{min-width:0;flex:1}
+.trending-chip-title{font-size:11px;font-weight:700;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trending-chip-likes{font-size:10px;color:var(--like);font-weight:700;margin-top:2px}
+
+/* SEARCH */
+.search-section{margin-bottom:24px}
+.search-wrap{position:relative;margin-bottom:14px}
+.search-input{width:100%;background:var(--ink-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 52px 14px 18px;color:var(--text);font-size:13px;transition:border-color .25s,box-shadow .25s;outline:none;caret-color:var(--gold)}
+.search-input:focus{border-color:var(--border-gold);box-shadow:0 0 0 3px var(--gold-d)}
+.search-input::placeholder{color:var(--text-dim)}
+.search-icon{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--text-dim);pointer-events:none;transition:color .2s}
+.search-input:focus ~ .search-icon{color:var(--gold)}
+.filter-bar{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:6px 15px;border-radius:99px;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-size:11px;font-weight:600;transition:all .2s var(--ease-out);white-space:nowrap}
+.filter-chip:hover{border-color:var(--border-gold);color:var(--gold);background:var(--gold-d)}
+.filter-chip.active{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:800}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:20px}
+.prompt-card{background:var(--ink-1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;transition:border-color .3s,transform .35s var(--ease-spring),box-shadow .35s;animation:cardIn .5s var(--ease-out) both;will-change:transform}
+.prompt-card:hover{border-color:rgba(201,162,39,.35);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(201,162,39,.06)}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.card-media{position:relative;height:200px;overflow:hidden;background:var(--ink-3);cursor:pointer}
+.card-media img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease-out)}
+.prompt-card:hover .card-media img{transform:scale(1.07)}
+.card-media-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,24,.98) 0%,rgba(13,13,24,.3) 40%,transparent 70%)}
+.card-badge{position:absolute;top:10px;right:10px;padding:4px 11px;border-radius:99px;background:rgba(7,7,15,.8);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:9.5px;font-weight:700;backdrop-filter:blur(10px);letter-spacing:.3px}
+/* trending badge on card */
+.card-hot{position:absolute;top:10px;left:10px;padding:4px 10px;border-radius:99px;background:rgba(255,60,60,.85);border:1px solid rgba(255,100,100,.3);color:#fff;font-size:9px;font-weight:800;backdrop-filter:blur(10px);display:flex;align-items:center;gap:4px}
+
+.card-body{padding:16px;flex-grow:1;display:flex;flex-direction:column;gap:10px}
+.card-title{font-size:13.5px;font-weight:800;color:#eaeaf5;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;transition:color .2s}
+.prompt-card:hover .card-title{color:var(--gold)}
+.card-preview{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:10px 13px;flex-grow:1}
+.card-preview p{font-size:10.5px;color:var(--text-dim);line-height:1.7;font-style:italic;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card-actions{display:flex;gap:7px}
+.card-copy{flex:1;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold-l));border:none;color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s var(--ease-out)}
+.card-copy:hover{box-shadow:0 4px 18px rgba(201,162,39,.4);transform:translateY(-1px)}
+.card-copy:active{transform:scale(.95)}
+.card-eye{padding:10px;border-radius:10px;background:var(--ink-3);border:1px solid var(--border);color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.card-eye:hover{border-color:var(--border-gold);color:var(--gold);background:var(--gold-d)}
+
+/* ════ SOCIAL ROW ════ */
+.card-social{display:flex;align-items:center;gap:8px;padding-top:6px;border-top:1px solid var(--border)}
+.like-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:99px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--text-dim);font-size:11px;font-weight:700;
+  transition:all .2s var(--ease-spring);
+}
+.like-btn:hover{border-color:rgba(255,92,92,.4);color:var(--like);background:rgba(255,92,92,.07)}
+.like-btn.liked{border-color:rgba(255,92,92,.5);color:var(--like);background:rgba(255,92,92,.1)}
+.like-btn.liked .like-heart{animation:heartPop .35s var(--ease-spring)}
+@keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.5)}100%{transform:scale(1)}}
+.like-heart{font-size:13px;line-height:1}
+.like-count{font-size:11px}
+.comment-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:99px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--text-dim);font-size:11px;font-weight:700;
+  transition:all .2s;
+}
+.comment-btn:hover{border-color:var(--border-gold);color:var(--gold);background:var(--gold-d)}
+.comment-count{font-size:11px}
+
+/* STATS */
+.stats-panel{background:var(--ink-1);border:1px solid var(--border-gold);border-radius:var(--r-lg);padding:22px;margin-bottom:28px;animation:cardIn .5s var(--ease-out) both}
+.stats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.stats-title{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:.8px;text-transform:uppercase}
+.stats-connected{font-size:9px;color:#4ade80;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);padding:3px 10px;border-radius:99px;font-weight:700}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat-box{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:12px;padding:16px 14px;text-align:center}
+.stat-label{font-size:9.5px;color:var(--text-dim);font-weight:600;margin-bottom:6px}
+.stat-num{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff}
+.stat-num.gold{color:var(--gold)}
+.stat-num.red{color:var(--like)}
+
+/* ADMIN BADGE */
+.admin-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;background:var(--gold-d);border:1px solid var(--border-gold);color:var(--gold);font-size:10px;font-weight:800;letter-spacing:.4px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+/* LOADING / EMPTY */
+.loader{text-align:center;padding:80px 16px}
+.spinner{width:36px;height:36px;border-radius:50%;border:2px solid var(--gold-d);border-top-color:var(--gold);animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:11px;color:var(--text-dim)}
+.empty-state{text-align:center;padding:60px 16px}
+.empty-icon{width:68px;height:68px;border-radius:50%;background:var(--gold-d);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.empty-title{font-size:15px;color:#aaa;font-weight:700;margin-bottom:6px}
+.empty-sub{font-size:11px;color:var(--text-dim)}
+
+/* META BAR */
+.meta-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.count-label{font-size:10.5px;color:var(--text-dim);font-weight:600}
+
+/* ════ COMMENTS MODAL ════ */
+.comments-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;max-height:320px;overflow-y:auto}
+.comment-item{display:flex;gap:10px;align-items:flex-start}
+.comment-avatar{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:var(--gold-d);border:1px solid var(--border-gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+}
+.comment-body{flex:1;min-width:0}
+.comment-name{font-size:10px;font-weight:800;color:var(--gold);margin-bottom:3px}
+.comment-text{font-size:12px;color:var(--text-soft);line-height:1.6;word-break:break-word}
+.comment-time{font-size:9px;color:var(--text-dim);margin-top:3px}
+.comment-input-row{display:flex;gap:8px;align-items:flex-end}
+.comment-input{flex:1;background:rgba(0,0,0,.38);border:1px solid var(--border);border-radius:12px;padding:10px 14px;color:var(--text);font-size:12px;outline:none;resize:none;caret-color:var(--gold);line-height:1.5;max-height:80px}
+.comment-input:focus{border-color:var(--border-gold);box-shadow:0 0 0 3px var(--gold-d)}
+.comment-input::placeholder{color:var(--text-dim)}
+.comment-name-input{width:100%;background:rgba(0,0,0,.38);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-size:12px;outline:none;caret-color:var(--gold);margin-bottom:8px}
+.comment-name-input:focus{border-color:var(--border-gold)}
+.comment-name-input::placeholder{color:var(--text-dim)}
+.comments-empty{text-align:center;padding:28px 16px;color:var(--text-dim);font-size:12px}
+
+/* PHOTO SERVICES */
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.section-header h2{font-size:20px;font-weight:900;color:#fff;white-space:nowrap}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(201,162,39,.4),transparent)}
+.section-badge{font-size:9px;padding:4px 12px;border-radius:99px;border:1px solid var(--border-gold);color:var(--gold);white-space:nowrap;font-weight:700;flex-shrink:0}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
+.service-card{background:var(--ink-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px 22px;position:relative;overflow:hidden;transition:border-color .3s,transform .35s var(--ease-spring),box-shadow .3s;animation:cardIn .5s var(--ease-out) both}
+.service-card::after{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle at top right,rgba(201,162,39,.05) 0%,transparent 65%);pointer-events:none}
+.service-card:hover{border-color:rgba(201,162,39,.4);transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,0,0,.5)}
+.service-card.featured{border-color:rgba(201,162,39,.28)}
+.service-emoji{font-size:34px;margin-bottom:14px}
+.service-name{font-size:15px;font-weight:800;color:#fff;margin-bottom:8px;line-height:1.3}
+.service-detail{font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.65}
+.service-price{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:10px;background:var(--gold-d);border:1px solid var(--border-gold);color:var(--gold);font-size:14px;font-weight:900;margin-bottom:16px}
+.service-features{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.service-feature{display:flex;align-items:center;gap:8px;font-size:11px;color:#8a8a9a}
+.service-feature::before{content:'✅';font-size:10px}
+
+/* GALLERY */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.gallery-item{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;background:var(--ink-2);border:1px solid var(--border);cursor:pointer;transition:transform .35s var(--ease-spring),box-shadow .3s,border-color .3s}
+.gallery-item:hover{transform:scale(1.03);box-shadow:0 14px 44px rgba(0,0,0,.6);border-color:rgba(201,162,39,.45)}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease-out)}
+.gallery-item:hover img{transform:scale(1.08)}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,7,15,.9) 0%,transparent 55%);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:12px}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.gallery-label{font-size:10.5px;font-weight:700;color:#fff}
+.gallery-del{position:absolute;top:8px;right:8px;z-index:2;width:30px;height:30px;border-radius:8px;background:rgba(7,7,15,.85);border:1px solid rgba(239,68,68,.4);color:#f87171;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s,background .2s}
+.gallery-item:hover .gallery-del{opacity:1}
+.gallery-del:hover{background:rgba(239,68,68,.25)}
+.gallery-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--ink-1);border:1px dashed rgba(201,162,39,.2);border-radius:var(--r);color:var(--text-dim);font-size:11px;gap:8px}
+.upload-card{background:var(--ink-1);border:1px solid var(--border-gold);border-radius:var(--r-lg);padding:20px;margin-bottom:24px}
+.drop-zone{border:2px dashed rgba(201,162,39,.3);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:rgba(0,0,0,.2);margin-bottom:10px}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--gold);background:var(--gold-d)}
+.drop-zone-icon{font-size:30px;margin-bottom:8px}
+.drop-zone-title{font-size:12px;font-weight:700;color:#ccc;margin-bottom:4px}
+.drop-zone-sub{font-size:10px;color:var(--text-dim)}
+.preview-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+
+/* GUIDE */
+.steps-card{background:var(--ink-1);border:1px solid rgba(201,162,39,.15);border-radius:var(--r-lg);padding:24px;margin-bottom:28px}
+.steps-title{font-size:11px;font-weight:800;color:var(--gold);margin-bottom:18px;letter-spacing:.6px}
+.step-row{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.step-row:last-child{border-bottom:none;padding-bottom:0}
+.step-num{width:32px;height:32px;flex-shrink:0;border-radius:50%;background:var(--gold-d);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--gold)}
+.step-content strong{display:block;font-size:13px;color:#ddd;font-weight:800;margin-bottom:4px}
+.step-content p{font-size:11.5px;color:var(--text-dim);line-height:1.65}
+.step-code{margin-top:10px;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:11px;color:#b0b0cc;line-height:1.65;direction:ltr;text-align:left}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px}
+.tool-card{background:var(--ink-1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;gap:10px;text-decoration:none;transition:border-color .3s,transform .3s var(--ease-spring);animation:cardIn .5s var(--ease-out) both}
+.tool-card:hover{border-color:rgba(201,162,39,.35);transform:translateY(-3px)}
+.tool-icon{font-size:30px}
+.tool-name{font-size:14px;font-weight:800;color:#fff}
+.tool-desc{font-size:11px;color:var(--text-dim);line-height:1.65;flex-grow:1}
+.tool-tag{font-size:9px;font-weight:800;color:var(--gold);background:var(--gold-d);border:1px solid rgba(201,162,39,.18);padding:3px 10px;border-radius:99px;width:fit-content}
+.tool-open{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:#aaa;font-size:11px;font-weight:700;text-decoration:none;transition:all .2s}
+.tool-open:hover{border-color:var(--border-gold);color:var(--gold);background:var(--gold-d)}
+.tip-box{margin-top:28px;padding:20px 24px;background:var(--ink-1);border:1px solid rgba(201,162,39,.15);border-radius:var(--r-lg)}
+
+/* RATING */
+.rating-widget{background:var(--ink-1);border:1px solid var(--border-gold);border-radius:var(--r-xl);padding:32px 28px;text-align:center;position:relative;overflow:hidden}
+.rating-widget::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,162,39,.07) 0%,transparent 65%);pointer-events:none}
+.rating-title{font-size:14px;color:#ccc;font-weight:700;margin-bottom:4px}
+.rating-sub{font-size:11px;color:var(--text-dim)}
+.stars-row{display:flex;justify-content:center;gap:8px;margin:18px 0}
+.star-btn{font-size:36px;background:none;border:none;transition:transform .2s var(--ease-spring),filter .2s;filter:grayscale(1) brightness(.45);line-height:1}
+.star-btn.lit{filter:none}
+.star-btn:hover{transform:scale(1.25)}
+.star-label{font-size:12px;color:var(--text-dim);min-height:20px;margin-bottom:6px;transition:color .2s}
+.rating-divider{height:1px;background:var(--border);margin:24px 0}
+.avg-display{display:inline-flex;align-items:center;gap:12px;padding:10px 22px;border-radius:99px;background:var(--gold-d);border:1px solid var(--border-gold);margin-bottom:8px}
+.avg-stars{font-size:22px;color:var(--gold)}
+.avg-num{font-size:28px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}
+.avg-of{font-size:9px;color:var(--text-dim)}
+.avg-count{font-size:10px;color:var(--text-dim);margin-top:6px}
+.rating-bars{margin-top:18px;display:flex;flex-direction:column;gap:7px}
+.bar-row{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text-dim)}
+.bar-track{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-l));transition:width .7s var(--ease-out)}
+.thanks-box{margin-top:20px;padding:18px 22px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);border-radius:var(--r-lg);text-align:center}
+
+/* MODALS */
+.modal-bg{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;transition:opacity .25s var(--ease-out);pointer-events:none}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal-box{position:relative;width:100%;max-height:92vh;background:var(--ink-2);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-xl);box-shadow:var(--shadow-lg);overflow:hidden;display:flex;flex-direction:column;transform:scale(.94) translateY(16px);transition:transform .3s var(--ease-spring)}
+.modal-bg.open .modal-box{transform:scale(1) translateY(0)}
+.modal-head{padding:22px 24px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-head h3{font-size:15px;font-weight:800;color:#fff}
+.modal-close-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close-btn:hover{background:rgba(255,255,255,.09);color:#fff;border-color:rgba(255,255,255,.15)}
+.modal-body{padding:22px 24px;overflow-y:auto;flex-grow:1}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);flex-shrink:0}
+
+/* Detail modal */
+.detail-box{max-width:900px}
+.detail-inner{display:flex;flex-direction:column;height:100%}
+@media(min-width:768px){.detail-inner{flex-direction:row}.detail-media{width:46%;min-height:440px}.detail-info{width:54%}}
+.detail-media{position:relative;flex-shrink:0;height:260px;background:#000;overflow:hidden}
+.detail-media img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease-out);cursor:zoom-in}
+.detail-media img.zoomed{transform:scale(1.5);cursor:zoom-out}
+.detail-media-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(7,7,15,.45) 0%,transparent 55%);pointer-events:none}
+.zoom-btn{position:absolute;bottom:12px;left:12px;padding:8px;border-radius:10px;background:rgba(7,7,15,.85);border:1px solid rgba(201,162,39,.4);color:var(--gold);backdrop-filter:blur(8px);transition:all .2s;display:flex;align-items:center}
+.zoom-btn:hover{background:var(--gold);color:var(--ink)}
+.detail-info{padding:24px;display:flex;flex-direction:column;overflow-y:auto;flex-grow:1}
+.detail-tag-chip{font-size:9.5px;font-weight:700;color:var(--gold);background:var(--gold-d);border:1px solid rgba(201,162,39,.2);padding:4px 12px;border-radius:99px;width:fit-content}
+.detail-title{font-size:19px;font-weight:800;color:#fff;margin:10px 0;line-height:1.35}
+.detail-prompt-box{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;padding:14px 16px;flex-grow:1;margin-top:12px}
+.detail-prompt-label{font-size:9px;color:var(--gold);font-weight:800;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+.detail-prompt-text{font-size:11px;color:#9090a8;line-height:1.8;max-height:180px;overflow-y:auto}
+.detail-actions{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+
+/* FORM */
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:10.5px;color:var(--text-dim);font-weight:700;letter-spacing:.3px}
+.form-input{width:100%;background:rgba(0,0,0,.38);border:1px solid var(--border);border-radius:12px;padding:11px 15px;color:var(--text);font-size:13px;transition:border-color .2s,box-shadow .2s;outline:none;caret-color:var(--gold)}
+.form-input:focus{border-color:var(--border-gold);box-shadow:0 0 0 3px var(--gold-d)}
+.form-input::placeholder{color:var(--text-dim)}
+textarea.form-input{resize:none;line-height:1.65}
+
+/* LIGHTBOX */
+.lightbox-bg{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.97);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.lightbox-bg.open{opacity:1;pointer-events:all}
+.lightbox-img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:12px;transform:scale(.95);transition:transform .3s var(--ease-spring)}
+.lightbox-bg.open .lightbox-img{transform:scale(1)}
+.lightbox-close{position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.lightbox-close:hover{background:rgba(255,255,255,.18)}
+.lightbox-cta{position:absolute;bottom:24px;left:50%;transform:translateX(-50%)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:500;display:flex;align-items:center;gap:10px;padding:12px 22px;border-radius:14px;background:var(--ink-2);border:1px solid rgba(201,162,39,.28);box-shadow:0 8px 40px rgba(0,0,0,.6);font-size:12.5px;font-weight:600;color:var(--text);opacity:0;pointer-events:none;transition:opacity .3s var(--ease-out),transform .35s var(--ease-spring);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 1.5s infinite;flex-shrink:0}
+
+/* FOOTER */
+.site-footer{text-align:center;padding:28px 16px;border-top:1px solid var(--border);color:var(--text-dim);font-size:10px;letter-spacing:.3px;position:relative;z-index:1}
+
+/* INSTALL BTN */
+.install-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold-l));color:var(--ink);border:none;font-size:13px;font-weight:800;box-shadow:0 4px 24px rgba(201,162,39,.35);transition:all .25s var(--ease-out)}
+.install-btn:hover{transform:translateY(-3px);box-shadow:0 10px 34px rgba(201,162,39,.5)}
+.install-btn:active{transform:scale(.96)}
+
+/* LAYOUT */
+.content-wrap{max-width:1120px;margin:0 auto;padding:0 24px 60px;position:relative;z-index:1}
+.tab-wrap{max-width:1120px;margin:0 auto;padding:28px 24px 60px;position:relative;z-index:1}
+.rating-wrap{max-width:680px;margin:0 auto;padding:28px 24px 70px;position:relative;z-index:1}
+
+@media(max-width:640px){
+  .header-inner{padding:0 16px}
+  .content-wrap,.tab-wrap,.rating-wrap{padding-left:16px;padding-right:16px}
+  .tabs-inner{padding:0 16px}
+  .modal-body{padding:16px}
+  .modal-head{padding:16px 16px 12px}
+  .modal-foot{padding:12px 16px}
+  .detail-info{padding:16px}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .hero{padding:44px 16px 36px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+</div>
+
+<!-- HEADER -->
+<header class="header" id="siteHeader">
+  <div class="header-inner">
+    <a class="logo" href="#" onclick="return false">
+      <div class="logo-mark"><span class="logo-char">H</span></div>
+      <div class="logo-text">
+        <h1>معرض حُر <span style="font-size:9px;padding:2px 8px;border-radius:4px;border:1px solid var(--border-gold);color:var(--gold);font-weight:600;margin-right:6px;vertical-align:middle">سينمائي</span></h1>
+        <p>مكتبة البرومتات الإبداعية والسيناريوهات البصرية</p>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button onclick="openTutorialModal()" class="btn btn-outline btn-sm">دليل التوليد 📖</button>
+      <button id="authBtn" onclick="toggleAuth()" class="btn btn-ghost btn-sm">دخول المخرج</button>
+      <button id="addBtn" onclick="openAddModal()" class="btn btn-gold btn-sm" style="display:none">إضافة لقطة +</button>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="main-tabs">
+  <div class="tabs-inner">
+    <button class="tab-btn active" data-tab="prompts"><span class="tab-icon">🎬</span> البرومتات</button>
+    <button class="tab-btn" data-tab="photo"><span class="tab-icon">📸</span> التصوير</button>
+    <button class="tab-btn" data-tab="gallery"><span class="tab-icon">🖼️</span> المعرض</button>
+    <button class="tab-btn" data-tab="tools"><span class="tab-icon">📖</span> دليل التوليد</button>
+    <button class="tab-btn" data-tab="rating"><span class="tab-icon">⭐</span> التقييم</button>
+  </div>
+</nav>
+
+<!-- TAB: PROMPTS -->
+<main id="tab-prompts" class="tab-panel active">
+  <div class="content-wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-logo-wrap">
+        <div class="hero-glow"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="108" height="108" class="hero-svg">
+          <defs>
+            <radialGradient id="hbg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#18182a"/><stop offset="100%" stop-color="#07070f"/></radialGradient>
+            <linearGradient id="hgg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5d06a"/><stop offset="100%" stop-color="#c9a227"/></linearGradient>
+            <filter id="hglow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <circle cx="90" cy="90" r="88" fill="url(#hbg)" stroke="rgba(201,162,39,.12)" stroke-width="1"/>
+          <circle cx="90" cy="90" r="72" fill="none" stroke="rgba(201,162,39,.18)" stroke-width="1"/>
+          <circle cx="90" cy="90" r="60" fill="none" stroke="url(#hgg)" stroke-width="2" filter="url(#hglow)"/>
+          <text x="90" y="110" font-family="Georgia,serif" font-size="54" font-weight="700" fill="url(#hgg)" text-anchor="middle" filter="url(#hglow)">H</text>
+        </svg>
+      </div>
+      <h1 class="hero-title">مَعرض حُر</h1>
+      <p class="hero-subtitle">Horr Gallery</p>
+      <p class="hero-desc">مكتبة البرومتات السينمائية الإبداعية • صور احترافية • أدوات ذكاء اصطناعي</p>
+      <button id="installBtn" onclick="triggerInstall()" class="install-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        <span id="installBtnText">تثبيت التطبيق</span>
+      </button>
+      <div class="hero-divider"></div>
+    </div>
+
+    <!-- STATS (admin only) -->
+    <div id="adminStats" class="stats-panel" style="display:none">
+      <div class="stats-header">
+        <span class="stats-title">لوحة تحكم المعرض</span>
+        <span class="stats-connected">☁️ Supabase متصل</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-label">إجمالي الزيارات</div><div class="stat-num" id="statViews">0</div></div>
+        <div class="stat-box"><div class="stat-label">عدد اللقطات</div><div class="stat-num gold" id="statCount">0</div></div>
+        <div class="stat-box"><div class="stat-label">إجمالي الإعجابات</div><div class="stat-num red" id="statLikes">0</div></div>
+      </div>
+    </div>
+
+    <!-- TRENDING -->
+    <div class="trending-section" id="trendingSection" style="display:none">
+      <div class="trending-header">
+        <span class="fire">🔥</span>
+        <h3>الأكثر انتشاراً اليوم</h3>
+      </div>
+      <div class="trending-bar" id="trendingBar"></div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-section">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" oninput="filterPrompts()" placeholder="البحث في الأرشيف السينمائي..." class="search-input" autocomplete="off">
+        <span class="search-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z"/></svg>
+        </span>
+      </div>
+      <div id="filterBar" class="filter-bar">
+        <button class="filter-chip active" onclick="setFilter('all',this)">الكل</button>
+      </div>
+    </div>
+
+    <!-- META BAR -->
+    <div class="meta-bar">
+      <span id="countLabel" class="count-label"></span>
+      <div id="adminBadge" style="display:none">
+        <span class="admin-badge"><span class="badge-dot"></span> وضع المخرج نشط</span>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loadingState" class="loader"><div class="spinner"></div><p class="loader-text">جاري تحميل اللقطات...</p></div>
+
+    <!-- GRID -->
+    <div id="cardsGrid" class="cards-grid" style="display:none"></div>
+
+    <!-- EMPTY -->
+    <div id="emptyState" style="display:none">
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:28px;height:28px;color:var(--gold)"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
+        </div>
+        <p class="empty-title">لا توجد نتائج مطابقة</p>
+        <p class="empty-sub">جرّب كلمة بحث مختلفة أو تصنيفاً آخر</p>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- TAB: PHOTOGRAPHY -->
+<section id="tab-photo" class="tab-panel">
+  <div class="tab-wrap">
+    <div class="section-header">
+      <h2>📸 خدمات التصوير الاحترافي</h2>
+      <div class="section-line"></div>
+      <span class="section-badge">بكاميرا حديثة عالية الجودة</span>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-emoji">✨</div>
+        <div class="service-name">صورة احترافية عدد (2)</div>
+        <div class="service-detail">جلسة تصوير سريعة بنتيجة احترافية — مثالية للصور الشخصية والذكريات</div>
+        <div class="service-price">💰 250 دينار عراقي فقط</div>
+        <div class="service-features">
+          <div class="service-feature">تصوير بكاميرا حديثة عالية الجودة</div>
+          <div class="service-feature">دقة ووضوح احترافي</div>
+          <div class="service-feature">تسليم سريع للصور</div>
+        </div>
+        <a href="https://wa.me/9647734522318?text=أريد%20حجز%20جلسة%20تصوير%20(2%20صور%20احترافية)%20-%20250%20دينار" target="_blank" rel="noopener" class="btn btn-wa btn-md" style="width:100%;text-decoration:none;border-radius:10px;font-size:13px">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          احجز عبر واتساب
+        </a>
+      </div>
+      <div class="service-card">
+        <div class="service-emoji">✨</div>
+        <div class="service-name">10 صور احترافية</div>
+        <div class="service-detail">جلسة متكاملة تمنحك 10 صور بجودة عالية — لحظات لا تُنسى بأسلوب احترافي</div>
+        <div class="service-price">💰 1,000 دينار عراقي فقط</div>
+        <div class="service-features">
+          <div class="service-feature">تصوير بكاميرا حديثة عالية الجودة</div>
+          <div class="service-feature">دقة ووضوح احترافي</div>
+          <div class="service-feature">تسليم سريع للصور</div>
+        </div>
+        <a href="https://wa.me/9647734522318?text=أريد%20حجز%20جلسة%20تصوير%20(10%20صور%20احترافية)%20-%201000%20دينار" target="_blank" rel="noopener" class="btn btn-wa btn-md" style="width:100%;text-decoration:none;border-radius:10px;font-size:13px">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          احجز عبر واتساب
+        </a>
+      </div>
+      <div class="service-card featured">
+        <div class="service-emoji">✨</div>
+        <div class="service-name">جلسة تصوير خاصة — 50 صورة</div>
+        <div class="service-detail">جلسة خاصة وشاملة بـ 50 صورة احترافية — تجربة لا مثيل لها</div>
+        <div class="service-price">💰 5,000 دينار عراقي فقط</div>
+        <div class="service-features">
+          <div class="service-feature">تصوير بكاميرا حديثة عالية الجودة</div>
+          <div class="service-feature">دقة ووضوح احترافي</div>
+          <div class="service-feature">تسليم سريع للصور</div>
+        </div>
+        <a href="https://wa.me/9647734522318?text=أريد%20حجز%20جلسة%20تصوير%20خاصة%20(50%20صورة)%20-%205000%20دينار" target="_blank" rel="noopener" class="btn btn-wa btn-md" style="width:100%;text-decoration:none;border-radius:10px;font-size:13px">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          احجز عبر واتساب
+        </a>
+      </div>
+      <div class="service-card" style="border-color:rgba(201,162,39,.18)">
+        <div class="service-emoji">⚽</div>
+        <div class="service-name">تصوير مباريات كرة القدم للاعبين</div>
+        <div class="service-detail">نلتقط كل حركة ولحظة إبداعية في الملعب — عدد الصور غير محدود لكل لاعب</div>
+        <div class="service-price">💰 1,000 دينار لكل لاعب</div>
+        <div class="service-features">
+          <div class="service-feature">عدد الصور غير محدود</div>
+          <div class="service-feature">تصوير بكاميرا حديثة عالية الجودة</div>
+          <div class="service-feature">دقة ووضوح احترافي</div>
+          <div class="service-feature">تسليم سريع للصور</div>
+        </div>
+        <a href="https://wa.me/9647734522318?text=أريد%20حجز%20تصوير%20مباراة%20كرة%20القدم%20-%201000%20دينار%20لكل%20لاعب" target="_blank" rel="noopener" class="btn btn-wa btn-md" style="width:100%;text-decoration:none;border-radius:10px;font-size:13px">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          احجز عبر واتساب
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: GALLERY -->
+<section id="tab-gallery" class="tab-panel">
+  <div class="tab-wrap">
+    <div class="section-header">
+      <h2>🖼️ معرض أعمالي</h2>
+      <div class="section-line"></div>
+      <span class="section-badge">صور حقيقية من جلساتي</span>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:24px;line-height:1.7">استعرض أعمالي الحقيقية — كل صورة التُقطت بعدستي. أعجبك ما ترى؟ تواصل معي لحجز جلستك.</p>
+    <div id="galleryUpload" class="upload-card" style="display:none">
+      <p style="font-size:11px;font-weight:800;color:var(--gold);margin-bottom:12px">📤 إضافة صورة جديدة للمعرض</p>
+      <div id="galleryDrop" class="drop-zone" onclick="document.getElementById('galleryFile').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleGalleryDrop(event)">
+        <div class="drop-zone-icon">🖼️</div>
+        <p class="drop-zone-title">اضغط هنا أو اسحب الصورة</p>
+        <p class="drop-zone-sub">PNG أو JPG أو WEBP — بحد أقصى 1 MB</p>
+      </div>
+      <input type="file" id="galleryFile" accept="image/*" style="display:none" onchange="handleGalleryFile(this.files[0])">
+      <div id="galleryPreview" class="preview-row" style="display:none">
+        <img id="galleryPreviewImg" src="" alt="" style="width:80px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+        <div style="flex:1"><p id="galleryPreviewName" style="font-size:10px;color:var(--text-dim);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></p><p id="galleryPreviewSize" style="font-size:10px;color:var(--gold);font-weight:700"></p></div>
+        <button onclick="addGalleryImg()" id="galleryAddBtn" class="btn btn-gold btn-sm">إضافة ＋</button>
+      </div>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="gallery-placeholder"><span style="font-size:28px">📷</span><span>قريباً</span></div>
+    </div>
+    <div style="margin-top:32px;padding:22px 24px;background:var(--ink-1);border:1px solid rgba(201,162,39,.2);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>
+        <p style="font-size:14px;font-weight:800;color:#fff;margin-bottom:4px">أعجبتك الصور؟ 📸</p>
+        <p style="font-size:11px;color:var(--text-dim)">تواصل معي الآن لحجز جلستك الخاصة بأسعار مناسبة</p>
+      </div>
+      <a href="https://wa.me/9647734522318?text=شفت%20معرض%20صورك%20وأريد%20حجز%20جلسة%20تصوير" target="_blank" rel="noopener" class="btn btn-wa btn-md" style="text-decoration:none;border-radius:10px;white-space:nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        احجز جلستك الآن
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: GUIDE -->
+<section id="tab-tools" class="tab-panel">
+  <div class="tab-wrap">
+    <div class="section-header">
+      <h2>📖 دليل التوليد الاحترافي</h2>
+      <div class="section-line"></div>
+      <span class="section-badge">AI + خطوات الاستخدام</span>
+    </div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:28px;line-height:1.7">اختر الأداة المناسبة لبرومتك، ثم اتبع الخطوات للحصول على لقطتك السينمائية.</p>
+    <div class="steps-card">
+      <p class="steps-title">⚡ الخطوات السريعة</p>
+      <div class="step-row"><div class="step-num">1</div><div class="step-content"><strong>انسخ البرومت</strong><p>اختر مشهداً من تبويب "البرومتات" واضغط "نسخ اللقطة".</p></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-content"><strong>افتح الأداة المناسبة</strong><p>اختر من القائمة أدناه — ChatGPT موصى به للمبتدئين.</p></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-content"><strong>ارفع صورتك الشخصية</strong><p>اضغط (+) وارفع صورة واضحة بوجه كامل وإضاءة جيدة، بدون نظارات.</p></div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-content"><strong>الصق البرومت وأرسل</strong><div class="step-code">"باستخدام هذه الصورة كمرجع للملامح، يرجى توليد: [البرومت هنا]"</div></div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-content"><strong>احصل على نتيجتك 🎬</strong><p>سيدمج الذكاء الاصطناعي وجهك مع المشهد السينمائي تلقائياً.</p></div></div>
+    </div>
+    <p style="font-size:11px;font-weight:800;color:var(--gold);margin:0 0 16px;letter-spacing:.6px">🤖 أفضل أدوات الذكاء الاصطناعي</p>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-icon">✨</div><div class="tool-name">ChatGPT (GPT-4o)</div><div class="tool-desc">الأقوى لدمج ملامحك مع المشهد السينمائي — ارفع صورتك والصق البرومت مباشرةً.</div><span class="tool-tag">⭐ موصى به</span><a href="https://chatgpt.com" target="_blank" rel="noopener" class="tool-open"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>فتح ChatGPT</a></div>
+      <div class="tool-card"><div class="tool-icon">💎</div><div class="tool-name">Google Gemini</div><div class="tool-desc">Gemini Advanced يدعم رفع الصور وتوليد مشاهد بصرية عالية الجودة بسرعة ملحوظة.</div><span class="tool-tag">مجاني جزئياً</span><a href="https://gemini.google.com" target="_blank" rel="noopener" class="tool-open"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>فتح Gemini</a></div>
+      <div class="tool-card"><div class="tool-icon">🎨</div><div class="tool-name">Midjourney</div><div class="tool-desc">ملك جودة الصور السينمائية — نتائجه تتميز بالعمق البصري والألوان السينمائية الخيالية.</div><span class="tool-tag">مدفوع</span><a href="https://www.midjourney.com" target="_blank" rel="noopener" class="tool-open"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>فتح Midjourney</a></div>
+      <div class="tool-card"><div class="tool-icon">🌊</div><div class="tool-name">Adobe Firefly</div><div class="tool-desc">أداة Adobe الذكية — مناسبة للمصممين وتوليد الصور الاحترافية بدون حقوق ملكية.</div><span class="tool-tag">مجاني جزئياً</span><a href="https://firefly.adobe.com" target="_blank" rel="noopener" class="tool-open"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>فتح Firefly</a></div>
+      <div class="tool-card"><div class="tool-icon">⚡</div><div class="tool-name">Leonardo.AI</div><div class="tool-desc">منصة متخصصة بالصور الفنية والسينمائية مع نماذج متعددة وتحكم كامل بالأسلوب البصري.</div><span class="tool-tag">مجاني جزئياً</span><a href="https://app.leonardo.ai" target="_blank" rel="noopener" class="tool-open"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>فتح Leonardo</a></div>
+      <div class="tool-card"><div class="tool-icon">🔮</div><div class="tool-name">Kling AI</div><div class="tool-desc">من الصورة إلى الفيديو السينمائي — حوّل برومتك إلى مشهد متحرك بواقعية مذهلة.</div><span class="tool-tag">فيديو AI</span><a href="https://klingai.com" target="_blank" rel="noopener" class="tool-open"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>فتح Kling</a></div>
+    </div>
+    <div class="tip-box">
+      <p style="font-size:11px;font-weight:800;color:var(--gold);margin-bottom:6px">💡 نصيحة المخرج</p>
+      <p style="font-size:11px;color:var(--text-dim);line-height:1.7">انسخ البرومت ← افتح الأداة ← ارفع صورتك ← الصق البرومت واحصل على لقطتك السينمائية في ثوانٍ.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: RATING -->
+<section id="tab-rating" class="tab-panel">
+  <div class="rating-wrap">
+    <div class="section-header"><h2>⭐ قيّم معرض حُر</h2><div class="section-line"></div></div>
+    <div class="rating-widget">
+      <p class="rating-title">ما رأيك بالموقع؟</p>
+      <p class="rating-sub">تقييمك يساعدنا على التطوير المستمر</p>
+      <div class="stars-row" id="starsRow">
+        <button class="star-btn" data-v="1" onclick="selectStar(1)">★</button>
+        <button class="star-btn" data-v="2" onclick="selectStar(2)">★</button>
+        <button class="star-btn" data-v="3" onclick="selectStar(3)">★</button>
+        <button class="star-btn" data-v="4" onclick="selectStar(4)">★</button>
+        <button class="star-btn" data-v="5" onclick="selectStar(5)">★</button>
+      </div>
+      <p id="starLabel" class="star-label"></p>
+      <button id="ratingBtn" onclick="submitRating()" class="btn btn-gold btn-md" disabled style="width:100%;max-width:240px">أرسل تقييمك</button>
+      <div class="rating-divider"></div>
+      <p style="font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:12px">متوسط التقييمات</p>
+      <div class="avg-display">
+        <span class="avg-stars" id="avgStars">☆☆☆☆☆</span>
+        <div><div class="avg-num" id="avgNum">—</div><div class="avg-of">من 5</div></div>
+      </div>
+      <p class="avg-count" id="avgCount">جاري التحميل...</p>
+      <div class="rating-bars" id="ratingBars">
+        <div class="bar-row"><span style="min-width:16px">5</span><span>★</span><div class="bar-track"><div class="bar-fill" id="bar5" style="width:0%"></div></div><span id="cnt5" style="min-width:20px;text-align:left">0</span></div>
+        <div class="bar-row"><span style="min-width:16px">4</span><span>★</span><div class="bar-track"><div class="bar-fill" id="bar4" style="width:0%"></div></div><span id="cnt4" style="min-width:20px;text-align:left">0</span></div>
+        <div class="bar-row"><span style="min-width:16px">3</span><span>★</span><div class="bar-track"><div class="bar-fill" id="bar3" style="width:0%"></div></div><span id="cnt3" style="min-width:20px;text-align:left">0</span></div>
+        <div class="bar-row"><span style="min-width:16px">2</span><span>★</span><div class="bar-track"><div class="bar-fill" id="bar2" style="width:0%"></div></div><span id="cnt2" style="min-width:20px;text-align:left">0</span></div>
+        <div class="bar-row"><span style="min-width:16px">1</span><span>★</span><div class="bar-track"><div class="bar-fill" id="bar1" style="width:0%"></div></div><span id="cnt1" style="min-width:20px;text-align:left">0</span></div>
+      </div>
+    </div>
+    <div id="thanksBox" class="thanks-box" style="display:none">
+      <p style="font-size:14px;margin-bottom:4px">✅ شكراً على تقييمك!</p>
+      <p style="font-size:11px;color:var(--text-dim)">رأيك يعني لنا الكثير ويساعدنا على تطوير المحتوى.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <button id="changePassBtn" onclick="openModal('changePassModal')" style="display:none;background:none;border:none;color:var(--text-dim);font-size:10px;text-decoration:underline dotted;cursor:pointer;margin-bottom:8px;font-family:inherit" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-dim)'">تحديث رمز المخرج</button>
+  <p>مَعرض حُر الإبداعي © 2026 — جميع الحقوق محفوظة</p>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="lightbox-bg" onclick="closeLightboxOut(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <img id="lightboxImg" class="lightbox-img" src="" alt="">
+  <div class="lightbox-cta">
+    <a href="https://wa.me/9647734522318?text=شفت%20صورك%20وأريد%20حجز%20جلسة%20تصوير" target="_blank" rel="noopener" class="btn btn-wa btn-sm" style="text-decoration:none;border-radius:10px">احجز جلستك الآن</a>
+  </div>
+</div>
+
+<!-- ════ MODALS ════ -->
+
+<!-- Tutorial -->
+<div id="tutorialModal" class="modal-bg">
+  <div style="position:absolute;inset:0" onclick="closeModal('tutorialModal')"></div>
+  <div class="modal-box" style="max-width:600px;position:relative">
+    <div class="modal-head"><h3>دليل دمج ملامحك مع البرومت السينمائي</h3><button class="modal-close-btn" onclick="closeModal('tutorialModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:0">
+      <div class="step-row"><div class="step-num">1</div><div class="step-content"><strong>انسخ كود اللقطة</strong><p>اختر المشهد واضغط "نسخ اللقطة" لنسخ البرومت فوراً.</p></div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-content"><strong>افتح ChatGPT أو Gemini</strong><p>GPT-4o أو Gemini Advanced للحصول على أفضل النتائج البصرية.</p></div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-content"><strong>ارفع صورتك الشخصية</strong><p>اضغط (+) وارفع صورتك بملامح واضحة وإضاءة جيدة — بدون نظارات شمسية.</p></div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-content"><strong>اكتب الأمر والصق البرومت</strong><div class="step-code">"باستخدام هذه الصورة المرفقة كمرجع أساسي للملامح، يرجى توليد: [ألصق هنا البرومت]"</div></div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-content"><strong>أرسل واحصل على النتيجة</strong><p>سيدمج الذكاء الاصطناعي وجهك مع المشهد تلقائياً.</p></div></div>
+    </div>
+    <div class="modal-foot"><button onclick="closeModal('tutorialModal')" class="btn btn-gold btn-lg" style="width:100%">فهمت! لنبدأ الإبداع 🎞️</button></div>
+  </div>
+</div>
+
+<!-- Login -->
+<div id="loginModal" class="modal-bg">
+  <div style="position:absolute;inset:0" onclick="closeModal('loginModal')"></div>
+  <div class="modal-box" style="max-width:380px;position:relative">
+    <div class="modal-head"><h3>إثبات هوية المخرج</h3><button class="modal-close-btn" onclick="closeModal('loginModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="modal-body"><p style="font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:18px">أدخل الرمز السري للوصول إلى لوحة التحكم</p><input type="password" id="passInput" placeholder="الرمز السري..." class="form-input" style="text-align:center;letter-spacing:4px;font-size:16px" autocomplete="off"></div>
+    <div class="modal-foot" style="display:flex;gap:8px"><button onclick="verifyAdmin()" class="btn btn-gold btn-md" style="flex:1">تأكيد الدخول</button><button onclick="closeModal('loginModal')" class="btn btn-ghost btn-md">إلغاء</button></div>
+  </div>
+</div>
+
+<!-- Change Password -->
+<div id="changePassModal" class="modal-bg">
+  <div style="position:absolute;inset:0" onclick="closeModal('changePassModal')"></div>
+  <div class="modal-box" style="max-width:380px;position:relative">
+    <div class="modal-head"><h3>تعديل رمز المخرج</h3><button class="modal-close-btn" onclick="closeModal('changePassModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-group"><label class="form-label">الرمز الحالي</label><input type="password" id="oldPass" placeholder="••••••••" class="form-input" autocomplete="off"></div>
+      <div class="form-group"><label class="form-label">الرمز الجديد</label><input type="password" id="newPass" placeholder="••••••••" class="form-input" autocomplete="off"></div>
+    </div>
+    <div class="modal-foot" style="display:flex;gap:8px"><button onclick="saveNewPass()" class="btn btn-gold btn-md" style="flex:1">حفظ الرمز 🔒</button><button onclick="closeModal('changePassModal')" class="btn btn-ghost btn-md">تراجع</button></div>
+  </div>
+</div>
+
+<!-- Add / Edit -->
+<div id="addModal" class="modal-bg">
+  <div style="position:absolute;inset:0" onclick="closeModal('addModal')"></div>
+  <div class="modal-box" style="max-width:560px;position:relative">
+    <div class="modal-head"><h3 id="addModalTitle">إضافة لقطة جديدة</h3><button class="modal-close-btn" onclick="closeModal('addModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px">
+      <input type="hidden" id="editId">
+      <div class="form-group"><label class="form-label">عنوان المشهد</label><input type="text" id="promptTitle" placeholder="مثال: بورتريه تحت المطر" class="form-input"></div>
+      <div class="form-group"><label class="form-label">التصنيف</label><input type="text" id="promptTag" placeholder="مثال: تصوير_سينمائي" class="form-input"></div>
+      <div class="form-group">
+        <label class="form-label">صورة المشهد</label>
+        <div id="promptDrop" class="drop-zone" onclick="document.getElementById('promptFile').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handlePromptDrop(event)">
+          <div class="drop-zone-icon">📷</div><p class="drop-zone-title">اضغط لرفع صورة أو اسحبها هنا</p><p class="drop-zone-sub">PNG أو JPG أو WEBP — بحد أقصى 1 MB</p>
+        </div>
+        <input type="file" id="promptFile" accept="image/*" style="display:none" onchange="handlePromptFile(this.files[0])">
+        <input type="hidden" id="promptImgData">
+        <div id="promptImgPre" style="display:none;width:100%;height:130px;border-radius:10px;overflow:hidden;border:1px solid var(--border);position:relative;margin-top:8px">
+          <img id="promptPreImg" src="" alt="" style="width:100%;height:100%;object-fit:cover">
+          <button onclick="clearPromptImg()" style="position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:6px;background:rgba(7,7,15,.9);border:1px solid rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>
+        </div>
+        <p id="promptSizeLabel" style="font-size:9.5px;color:var(--gold);margin-top:5px;display:none;font-weight:700"></p>
+      </div>
+      <div class="form-group"><label class="form-label">البرومت (Prompt)</label><textarea id="promptText" rows="5" placeholder="اكتب البرومت بالإنجليزية هنا..." class="form-input"></textarea></div>
+    </div>
+    <div class="modal-foot" style="display:flex;gap:8px"><button onclick="submitPromptForm()" id="saveBtn" class="btn btn-gold btn-md" style="flex:1">حفظ اللقطة 💾</button><button onclick="closeModal('addModal')" class="btn btn-ghost btn-md">إلغاء</button></div>
+  </div>
+</div>
+
+<!-- Delete confirm -->
+<div id="deleteModal" class="modal-bg">
+  <div style="position:absolute;inset:0" onclick="closeModal('deleteModal')"></div>
+  <div class="modal-box" style="max-width:360px;position:relative">
+    <div class="modal-head" style="border-bottom:none"><h3 style="color:#f87171">تأكيد الحذف</h3><button class="modal-close-btn" onclick="closeModal('deleteModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></div>
+    <div class="modal-body" style="text-align:center;padding-top:8px">
+      <div style="width:54px;height:54px;border-radius:50%;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="width:24px;height:24px;color:#f87171"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg></div>
+      <p style="font-size:12px;color:#aaa">هل أنت متأكد من حذف هذه اللقطة؟ هذا الإجراء لا يمكن التراجع عنه.</p>
+    </div>
+    <div class="modal-foot" style="display:flex;gap:8px"><button id="confirmDelBtn" class="btn btn-danger btn-md" style="flex:1">حذف نهائياً</button><button onclick="closeModal('deleteModal')" class="btn btn-ghost btn-md">تراجع</button></div>
+  </div>
+</div>
+
+<!-- Detail -->
+<div id="detailModal" class="modal-bg">
+  <div style="position:absolute;inset:0" onclick="closeModal('detailModal')"></div>
+  <div class="modal-box detail-box" style="position:relative">
+    <div class="detail-inner">
+      <div class="detail-media">
+        <img id="detailImg" src="" alt="" onclick="toggleZoom()" loading="lazy">
+        <div class="detail-media-overlay"></div>
+        <button onclick="toggleZoom()" class="zoom-btn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637zM10.5 7.5v6m3-3h-6"/></svg></button>
+      </div>
+      <div class="detail-info">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span id="detailTag" class="detail-tag-chip"></span>
+          <button class="modal-close-btn" onclick="closeModal('detailModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        </div>
+        <h2 id="detailTitle" class="detail-title"></h2>
+        <div class="detail-prompt-box">
+          <p class="detail-prompt-label">البرومت البرمجي:</p>
+          <div id="detailPrompt" class="detail-prompt-text"></div>
+        </div>
+        <div class="detail-actions">
+          <button id="detailCopyBtn" class="btn btn-gold btn-md" style="width:100%;gap:8px">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z"/></svg>
+            نسخ فوري للحافظة
+          </button>
+          <div style="display:flex;gap:8px">
+            <button id="detailEditBtn" class="btn btn-ghost btn-md" style="display:none;flex:1">✏️ تعديل</button>
+            <button id="detailDelBtn" class="btn btn-danger btn-md" style="display:none;flex:1">🗑️ حذف</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ COMMENTS MODAL ════ -->
+<div id="commentsModal" class="modal-bg">
+  <div style="position:absolute;inset:0" onclick="closeModal('commentsModal')"></div>
+  <div class="modal-box" style="max-width:480px;position:relative">
+    <div class="modal-head">
+      <div>
+        <h3 id="commentsModalTitle">التعليقات</h3>
+        <p id="commentsModalSub" style="font-size:10px;color:var(--text-dim);margin-top:2px"></p>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('commentsModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:0">
+      <!-- Comments list -->
+      <div class="comments-list" id="commentsList">
+        <div class="comments-empty">⏳ جاري تحميل التعليقات...</div>
+      </div>
+      <!-- New comment form -->
+      <div style="border-top:1px solid var(--border);padding-top:14px">
+        <input type="text" id="commentNameInput" class="comment-name-input" placeholder="اسمك (اختياري)..." maxlength="30" autocomplete="off">
+        <div class="comment-input-row">
+          <textarea id="commentTextInput" class="comment-input" rows="2" placeholder="اكتب تعليقك هنا..." maxlength="300"></textarea>
+          <button onclick="submitComment()" class="btn btn-gold btn-sm" style="flex-shrink:0;align-self:flex-end;padding:10px 14px">إرسال</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"><span class="toast-dot"></span><span id="toastMsg"></span></div>
+
+<script>
+// ════════════════════════════════════════
+// SUPABASE
+// ════════════════════════════════════════
+const SB_URL = 'https://tssckbszlizgbnwokzob.supabase.co';
+const SB_KEY = 'sb_publishable_H4LLmYVfgGVZxCMGZEC-qw_gqFnLYVz';
+const db = supabase.createClient(SB_URL, SB_KEY);
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+const S = {
+  prompts: [],
+  gallery: [],
+  galleryPending: null,
+  promptPending: null,
+  isAdmin: false,
+  adminPass: localStorage.getItem('hor_p') || '1234',
+  activeFilter: 'all',
+  deleteTarget: null,
+  isZoomed: false,
+  selectedStar: 0,
+  // social: { promptId -> { likes, liked, commentCount } }
+  social: {},
+  activeCommentsId: null,
+  comments: {} // promptId -> []
+};
+
+const DEFAULT_IMG = 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&q=80&w=800';
+const STAR_LABELS = ['','ضعيف 😕','مقبول 😐','جيد 👍','رائع 🌟','ممتاز! 🔥'];
+const EMOJIS = ['🎬','✨','🌟','🎭','🔥','💫','🎨','🌙'];
+
+// ════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════
+async function boot() {
+  trackVisit();
+  initTabs();
+  initHeaderScroll();
+  await Promise.all([loadPrompts(), loadGallery(), loadRatings()]);
+}
+
+// ════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════
+function initTabs() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+function initHeaderScroll() {
+  const h = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => h.classList.toggle('scrolled', window.scrollY > 20), { passive: true });
+}
+
+// ════════════════════════════════════════
+// VISIT
+// ════════════════════════════════════════
+function trackVisit() {
+  if (sessionStorage.getItem('hv')) return;
+  const v = (parseInt(localStorage.getItem('hviews') || '0')) + 1;
+  localStorage.setItem('hviews', v);
+  sessionStorage.setItem('hv', '1');
+  document.getElementById('statViews').textContent = v;
+}
+
+// ════════════════════════════════════════
+// DATA — PROMPTS
+// ════════════════════════════════════════
+async function loadPrompts() {
+  setLoading(true);
+  try {
+    const { data, error } = await db.from('prompts').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    S.prompts = data.map(r => ({ id: r.id, title: r.title, category: r.category, imgUrl: r.img_url, prompt: r.prompt }));
+  } catch {
+    const raw = localStorage.getItem('hor_prompts');
+    S.prompts = raw ? JSON.parse(raw) : [];
+  }
+  setLoading(false);
+
+  // Load social data
+  await loadAllSocial();
+  buildFilters();
+  renderPrompts();
+  renderTrending();
+  document.getElementById('statCount').textContent = S.prompts.length;
+}
+
+function setLoading(v) {
+  document.getElementById('loadingState').style.display = v ? 'block' : 'none';
+  document.getElementById('cardsGrid').style.display = v ? 'none' : 'grid';
+}
+
+// ════════════════════════════════════════
+// SOCIAL — LIKES & COMMENTS
+// ════════════════════════════════════════
+// liked set stored in localStorage per device
+function getLikedSet() {
+  try { return new Set(JSON.parse(localStorage.getItem('hor_liked') || '[]')); }
+  catch { return new Set(); }
+}
+function saveLikedSet(set) {
+  localStorage.setItem('hor_liked', JSON.stringify([...set]));
+}
+
+async function loadAllSocial() {
+  const likedSet = getLikedSet();
+  // Try Supabase
+  try {
+    // Load likes counts
+    const { data: likesData, error: likeErr } = await db.from('likes').select('prompt_id');
+    if (!likeErr && likesData) {
+      const counts = {};
+      likesData.forEach(r => { counts[r.prompt_id] = (counts[r.prompt_id] || 0) + 1; });
+      S.prompts.forEach(p => {
+        S.social[p.id] = S.social[p.id] || {};
+        S.social[p.id].likes = counts[p.id] || 0;
+        S.social[p.id].liked = likedSet.has(String(p.id));
+      });
+    }
+    // Load comment counts
+    const { data: cmtData, error: cmtErr } = await db.from('comments').select('prompt_id');
+    if (!cmtErr && cmtData) {
+      const ccounts = {};
+      cmtData.forEach(r => { ccounts[r.prompt_id] = (ccounts[r.prompt_id] || 0) + 1; });
+      S.prompts.forEach(p => {
+        S.social[p.id] = S.social[p.id] || {};
+        S.social[p.id].commentCount = ccounts[p.id] || 0;
+      });
+    }
+  } catch {
+    // fallback: local only
+    S.prompts.forEach(p => {
+      const loc = JSON.parse(localStorage.getItem('hor_likes_' + p.id) || '0');
+      S.social[p.id] = { likes: parseInt(loc) || 0, liked: likedSet.has(String(p.id)), commentCount: 0 };
+    });
+  }
+
+  // Total likes for admin stat
+  const total = Object.values(S.social).reduce((a, b) => a + (b.likes || 0), 0);
+  document.getElementById('statLikes').textContent = total;
+}
+
+async function toggleLike(promptId, btn) {
+  const id = String(promptId);
+  const likedSet = getLikedSet();
+  const soc = S.social[id] || { likes: 0, liked: false };
+  const wasLiked = soc.liked;
+
+  // Optimistic update
+  soc.liked = !wasLiked;
+  soc.likes = Math.max(0, (soc.likes || 0) + (wasLiked ? -1 : 1));
+  S.social[id] = soc;
+
+  if (!wasLiked) { likedSet.add(id); } else { likedSet.delete(id); }
+  saveLikedSet(likedSet);
+
+  // Update button UI
+  updateLikeBtn(btn, soc.liked, soc.likes);
+
+  // Sync Supabase
+  try {
+    if (!wasLiked) {
+      await db.from('likes').insert({ prompt_id: id, device_id: getDeviceId() });
+    } else {
+      await db.from('likes').delete().eq('prompt_id', id).eq('device_id', getDeviceId());
+    }
+  } catch {
+    // local fallback already done
+    localStorage.setItem('hor_likes_' + id, soc.likes);
+  }
+
+  toast(wasLiked ? 'تم إلغاء الإعجاب' : '❤️ أعجبك هذا المشهد!');
+  renderTrending();
+
+  // Update admin stat
+  const total = Object.values(S.social).reduce((a, b) => a + (b.likes || 0), 0);
+  document.getElementById('statLikes').textContent = total;
+}
+
+function updateLikeBtn(btn, liked, count) {
+  if (!btn) return;
+  btn.classList.toggle('liked', liked);
+  btn.querySelector('.like-heart').textContent = liked ? '❤️' : '🤍';
+  btn.querySelector('.like-count').textContent = count || 0;
+}
+
+function getDeviceId() {
+  let id = localStorage.getItem('hor_dev');
+  if (!id) { id = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('hor_dev', id); }
+  return id;
+}
+
+// ════════════════════════════════════════
+// COMMENTS
+// ════════════════════════════════════════
+async function openComments(promptId) {
+  const item = S.prompts.find(p => String(p.id) === String(promptId));
+  if (!item) return;
+  S.activeCommentsId = promptId;
+  document.getElementById('commentsModalTitle').textContent = '💬 تعليقات';
+  document.getElementById('commentsModalSub').textContent = item.title;
+  document.getElementById('commentTextInput').value = '';
+  openModal('commentsModal');
+  await loadComments(promptId);
+}
+
+async function loadComments(promptId) {
+  const list = document.getElementById('commentsList');
+  list.innerHTML = '<div class="comments-empty">⏳ جاري التحميل...</div>';
+  try {
+    const { data, error } = await db.from('comments')
+      .select('*').eq('prompt_id', String(promptId))
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    S.comments[promptId] = data || [];
+  } catch {
+    S.comments[promptId] = JSON.parse(localStorage.getItem('hor_cmt_' + promptId) || '[]');
+  }
+  renderComments(promptId);
+}
+
+function renderComments(promptId) {
+  const list = document.getElementById('commentsList');
+  const cmts = S.comments[promptId] || [];
+  if (!cmts.length) {
+    list.innerHTML = '<div class="comments-empty">لا توجد تعليقات بعد 💬<br><span style="font-size:10px;margin-top:4px;display:block">كن أول من يعلّق!</span></div>';
+    return;
+  }
+  list.innerHTML = '';
+  cmts.forEach(c => {
+    const name = c.username || 'زائر';
+    const emoji = EMOJIS[name.charCodeAt(0) % EMOJIS.length];
+    const time = c.created_at ? timeAgo(c.created_at) : '';
+    const d = document.createElement('div');
+    d.className = 'comment-item';
+    d.innerHTML = `
+      <div class="comment-avatar">${emoji}</div>
+      <div class="comment-body">
+        <div class="comment-name">${esc(name)}</div>
+        <div class="comment-text">${esc(c.text || c.content || '')}</div>
+        <div class="comment-time">${time}</div>
+      </div>
+      ${S.isAdmin ? `<button onclick="deleteComment('${c.id}','${promptId}')" style="background:none;border:none;color:#f87171;font-size:14px;cursor:pointer;padding:4px;flex-shrink:0" title="حذف">✕</button>` : ''}`;
+    list.appendChild(d);
+  });
+  list.scrollTop = list.scrollHeight;
+}
+
+async function submitComment() {
+  const text = document.getElementById('commentTextInput').value.trim();
+  const name = document.getElementById('commentNameInput').value.trim() || 'زائر';
+  if (!text) { toast('اكتب تعليقك أولاً'); return; }
+  if (!S.activeCommentsId) return;
+
+  const promptId = String(S.activeCommentsId);
+  const newCmt = { id: 'l_' + Date.now(), prompt_id: promptId, username: name, text, content: text, created_at: new Date().toISOString() };
+
+  // Optimistic
+  S.comments[promptId] = S.comments[promptId] || [];
+  S.comments[promptId].push(newCmt);
+  renderComments(promptId);
+  document.getElementById('commentTextInput').value = '';
+
+  // Update count
+  S.social[promptId] = S.social[promptId] || {};
+  S.social[promptId].commentCount = (S.social[promptId].commentCount || 0) + 1;
+  updateCommentBtnCount(promptId);
+
+  try {
+    await db.from('comments').insert({ prompt_id: promptId, username: name, text });
+  } catch {
+    const loc = JSON.parse(localStorage.getItem('hor_cmt_' + promptId) || '[]');
+    loc.push(newCmt);
+    localStorage.setItem('hor_cmt_' + promptId, JSON.stringify(loc));
+  }
+  toast('✅ تم نشر تعليقك!');
+}
+
+async function deleteComment(cmtId, promptId) {
+  if (!S.isAdmin) return;
+  S.comments[promptId] = (S.comments[promptId] || []).filter(c => String(c.id) !== String(cmtId));
+  renderComments(promptId);
+  S.social[promptId] = S.social[promptId] || {};
+  S.social[promptId].commentCount = Math.max(0, (S.social[promptId].commentCount || 1) - 1);
+  updateCommentBtnCount(promptId);
+  try { await db.from('comments').delete().eq('id', cmtId); } catch {}
+  toast('تم حذف التعليق');
+}
+
+function updateCommentBtnCount(promptId) {
+  const btn = document.querySelector(`.comment-btn[data-id="${promptId}"]`);
+  if (btn) btn.querySelector('.comment-count').textContent = S.social[promptId]?.commentCount || 0;
+}
+
+function timeAgo(iso) {
+  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60) return 'الآن';
+  if (s < 3600) return Math.floor(s/60) + ' د';
+  if (s < 86400) return Math.floor(s/3600) + ' س';
+  return Math.floor(s/86400) + ' ي';
+}
+
+// ════════════════════════════════════════
+// TRENDING
+// ════════════════════════════════════════
+function renderTrending() {
+  // Sort by likes descending, top 6
+  const sorted = [...S.prompts]
+    .map(p => ({ ...p, likes: (S.social[String(p.id)] || {}).likes || 0 }))
+    .filter(p => p.likes > 0)
+    .sort((a, b) => b.likes - a.likes)
+    .slice(0, 6);
+
+  const section = document.getElementById('trendingSection');
+  const bar = document.getElementById('trendingBar');
+
+  if (!sorted.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  bar.innerHTML = '';
+
+  sorted.forEach((item, i) => {
+    const rankClass = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+    const chip = document.createElement('div');
+    chip.className = 'trending-chip';
+    chip.onclick = () => openDetail(item.id);
+    chip.innerHTML = `
+      <div class="trending-rank ${rankClass}">${i + 1}</div>
+      <img class="trending-chip-img" src="${esc(item.imgUrl || DEFAULT_IMG)}" alt="" onerror="this.src='${DEFAULT_IMG}'" loading="lazy">
+      <div class="trending-chip-info">
+        <div class="trending-chip-title">${esc(item.title)}</div>
+        <div class="trending-chip-likes">❤️ ${item.likes} إعجاب</div>
+      </div>`;
+    bar.appendChild(chip);
+  });
+}
+
+// ════════════════════════════════════════
+// FILTERS
+// ════════════════════════════════════════
+function buildFilters() {
+  const cats = [...new Set(S.prompts.map(p => p.category).filter(Boolean))];
+  const bar = document.getElementById('filterBar');
+  bar.innerHTML = '<button class="filter-chip active" onclick="setFilter(\'all\',this)">الكل</button>';
+  cats.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'filter-chip';
+    b.textContent = '#' + c;
+    b.onclick = () => setFilter(c, b);
+    bar.appendChild(b);
+  });
+}
+
+function setFilter(val, btn) {
+  S.activeFilter = val;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterPrompts();
+}
+
+function filterPrompts() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let list = S.prompts;
+  if (S.activeFilter !== 'all') list = list.filter(p => p.category === S.activeFilter);
+  if (q) list = list.filter(p => p.title.toLowerCase().includes(q) || p.prompt.toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q));
+  renderPrompts(list);
+}
+
+// ════════════════════════════════════════
+// RENDER CARDS
+// ════════════════════════════════════════
+function renderPrompts(list) {
+  const data = list ?? S.prompts;
+  const grid = document.getElementById('cardsGrid');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('countLabel').textContent = data.length + ' لقطة';
+
+  if (!data.length) { grid.style.display = 'none'; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  grid.style.display = 'grid';
+  grid.innerHTML = '';
+
+  data.forEach((item, i) => {
+    const id = String(item.id);
+    const img = item.imgUrl || DEFAULT_IMG;
+    const soc = S.social[id] || { likes: 0, liked: false, commentCount: 0 };
+    const isHot = (soc.likes || 0) >= 5; // 5+ likes = hot
+
+    const el = document.createElement('div');
+    el.className = 'prompt-card';
+    el.style.animationDelay = (i * 0.05) + 's';
+    el.innerHTML = `
+      <div class="card-media" onclick="openDetail('${id}')">
+        <img src="${esc(img)}" alt="${esc(item.title)}" onerror="this.src='${DEFAULT_IMG}'" loading="lazy">
+        <div class="card-media-overlay"></div>
+        <span class="card-badge">#${esc(item.category)}</span>
+        ${isHot ? '<span class="card-hot">🔥 رائج</span>' : ''}
+      </div>
+      <div class="card-body">
+        <h3 class="card-title">${esc(item.title)}</h3>
+        <div class="card-preview"><p>"${esc(item.prompt)}"</p></div>
+        <div class="card-actions">
+          <button class="card-copy" onclick="copyPrompt('${id}',this)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5A3.375 3.375 0 006.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0015 2.25h-1.5a2.251 2.251 0 00-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 00-9-9z"/></svg>
+            نسخ اللقطة
+          </button>
+          <button class="card-eye" onclick="openDetail('${id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </button>
+        </div>
+        <!-- SOCIAL ROW -->
+        <div class="card-social">
+          <button class="like-btn ${soc.liked ? 'liked' : ''}" onclick="toggleLike('${id}', this)">
+            <span class="like-heart">${soc.liked ? '❤️' : '🤍'}</span>
+            <span class="like-count">${soc.likes || 0}</span>
+          </button>
+          <button class="comment-btn" data-id="${id}" onclick="openComments('${id}')">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+            <span class="comment-count">${soc.commentCount || 0}</span>
+          </button>
+        </div>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+
+// ════════════════════════════════════════
+// COPY
+// ════════════════════════════════════════
+function copyPrompt(id, btn) {
+  const item = S.prompts.find(p => String(p.id) === String(id));
+  if (!item) return;
+  const done = () => {
+    toast('تم نسخ الكود ✅');
+    if (!btn) return;
+    const orig = btn.innerHTML;
+    btn.textContent = '✅ تم النسخ!';
+    btn.style.cssText += ';background:#fff;color:#000';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 2200);
+  };
+  navigator.clipboard.writeText(item.prompt).then(done).catch(() => {
+    const t = Object.assign(document.createElement('textarea'), { value: item.prompt });
+    document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); done();
+  });
+}
+
+// ════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════
+function toggleAuth() { S.isAdmin ? logout() : openModal('loginModal'); }
+
+function verifyAdmin() {
+  if (document.getElementById('passInput').value === S.adminPass) {
+    S.isAdmin = true; updateAdminUI(); closeModal('loginModal'); toast('مرحباً يا حُر 🎬');
+  } else { toast('رمز غير صحيح ❌'); document.getElementById('passInput').value = ''; }
+}
+
+function logout() { S.isAdmin = false; updateAdminUI(); toast('تم الخروج'); }
+
+function updateAdminUI() {
+  const show = S.isAdmin;
+  document.getElementById('addBtn').style.display = show ? '' : 'none';
+  document.getElementById('changePassBtn').style.display = show ? '' : 'none';
+  document.getElementById('adminStats').style.display = show ? '' : 'none';
+  document.getElementById('adminBadge').style.display = show ? '' : 'none';
+  document.getElementById('galleryUpload').style.display = show ? '' : 'none';
+  document.getElementById('authBtn').textContent = show ? 'خروج المخرج' : 'دخول المخرج';
+  renderPrompts(); renderGallery();
+}
+
+function saveNewPass() {
+  const o = document.getElementById('oldPass').value;
+  const n = document.getElementById('newPass').value.trim();
+  if (!n) { toast('أدخل رمزاً جديداً'); return; }
+  if (o === S.adminPass) {
+    S.adminPass = n; localStorage.setItem('hor_p', n);
+    toast('تم تحديث الرمز 🔒'); closeModal('changePassModal');
+    document.getElementById('oldPass').value = ''; document.getElementById('newPass').value = '';
+  } else { toast('الرمز الحالي غير صحيح ❌'); }
+}
+
+// ════════════════════════════════════════
+// ADD / EDIT
+// ════════════════════════════════════════
+function openAddModal(editId) {
+  if (!S.isAdmin) return;
+  ['editId','promptTitle','promptTag','promptText','promptImgData'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('promptPreImg').src = '';
+  document.getElementById('promptImgPre').style.display = 'none';
+  document.getElementById('promptSizeLabel').style.display = 'none';
+  S.promptPending = null;
+  if (document.getElementById('promptFile')) document.getElementById('promptFile').value = '';
+  document.getElementById('addModalTitle').textContent = 'إضافة لقطة جديدة';
+  document.getElementById('saveBtn').textContent = 'حفظ اللقطة 💾';
+  if (editId) {
+    const item = S.prompts.find(p => String(p.id) === String(editId));
+    if (item) {
+      document.getElementById('editId').value = item.id;
+      document.getElementById('promptTitle').value = item.title;
+      document.getElementById('promptTag').value = item.category;
+      document.getElementById('promptText').value = item.prompt;
+      if (item.imgUrl) {
+        document.getElementById('promptImgData').value = item.imgUrl;
+        document.getElementById('promptPreImg').src = item.imgUrl;
+        document.getElementById('promptImgPre').style.display = 'block';
+        document.getElementById('promptSizeLabel').textContent = '🖼️ صورة محفوظة';
+        document.getElementById('promptSizeLabel').style.display = 'block';
+      }
+      document.getElementById('addModalTitle').textContent = 'تعديل اللقطة';
+      document.getElementById('saveBtn').textContent = 'حفظ التعديلات ✏️';
+    }
+  }
+  openModal('addModal');
+}
+
+async function submitPromptForm() {
+  if (!S.isAdmin) return;
+  const id = document.getElementById('editId').value;
+  const title = document.getElementById('promptTitle').value.trim();
+  const category = document.getElementById('promptTag').value.trim();
+  const prompt = document.getElementById('promptText').value.trim();
+  const imgUrl = document.getElementById('promptImgData').value.trim() || DEFAULT_IMG;
+  if (!title || !category || !prompt) { toast('الرجاء ملء جميع الحقول'); return; }
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = 'جاري الحفظ...'; btn.disabled = true;
+  try {
+    if (id) {
+      const { error } = await db.from('prompts').update({ title, category, img_url: imgUrl, prompt }).eq('id', id);
+      if (error) throw error;
+    } else {
+      const { error } = await db.from('prompts').insert({ title, category, img_url: imgUrl, prompt });
+      if (error) throw error;
+    }
+    await loadPrompts(); closeModal('addModal');
+    toast(id ? 'تم التحديث ✨' : 'تمت الإضافة 🎞️');
+  } catch(e) { toast('حدث خطأ ❌ ' + (e.message || '')); }
+  finally { btn.textContent = id ? 'حفظ التعديلات ✏️' : 'حفظ اللقطة 💾'; btn.disabled = false; }
+}
+
+// ════════════════════════════════════════
+// DELETE
+// ════════════════════════════════════════
+function openDeleteModal(id) {
+  S.deleteTarget = id;
+  document.getElementById('confirmDelBtn').onclick = () => deletePrompt(id);
+  openModal('deleteModal');
+}
+
+async function deletePrompt(id) {
+  try {
+    const { error } = await db.from('prompts').delete().eq('id', id);
+    if (error) throw error;
+    await loadPrompts(); closeModal('deleteModal'); toast('تم الحذف 🗑️');
+  } catch { toast('حدث خطأ ❌'); }
+}
+
+// ════════════════════════════════════════
+// DETAIL MODAL
+// ════════════════════════════════════════
+function openDetail(id) {
+  const item = S.prompts.find(p => String(p.id) === String(id));
+  if (!item) return;
+  const img = document.getElementById('detailImg');
+  img.src = item.imgUrl || DEFAULT_IMG;
+  img.classList.remove('zoomed');
+  S.isZoomed = false;
+  document.getElementById('detailTitle').textContent = item.title;
+  document.getElementById('detailTag').textContent = '#' + item.category;
+  document.getElementById('detailPrompt').textContent = item.prompt;
+  const copyBtn = document.getElementById('detailCopyBtn');
+  copyBtn.onclick = () => copyPrompt(id, copyBtn);
+  const editBtn = document.getElementById('detailEditBtn');
+  const delBtn = document.getElementById('detailDelBtn');
+  editBtn.style.display = S.isAdmin ? '' : 'none';
+  delBtn.style.display = S.isAdmin ? '' : 'none';
+  editBtn.onclick = () => { closeModal('detailModal'); openAddModal(id); };
+  delBtn.onclick = () => { closeModal('detailModal'); openDeleteModal(id); };
+  openModal('detailModal');
+}
+
+function toggleZoom() {
+  S.isZoomed = !S.isZoomed;
+  document.getElementById('detailImg').classList.toggle('zoomed', S.isZoomed);
+}
+
+// ════════════════════════════════════════
+// GALLERY
+// ════════════════════════════════════════
+async function loadGallery() {
+  try {
+    const { data, error } = await db.from('gallery').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    S.gallery = data.map(r => ({ id: r.id, url: r.img_url }));
+  } catch {
+    const raw = localStorage.getItem('hor_gallery');
+    S.gallery = raw ? JSON.parse(raw) : [];
+  }
+  renderGallery();
+}
+
+function renderGallery() {
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  if (!S.gallery.length) {
+    ['📷 قريباً','⚽ المباريات','✨ جلسات خاصة','🌟 لحظات'].forEach(t => {
+      const d = document.createElement('div');
+      d.className = 'gallery-placeholder';
+      const [em, ...rest] = t.split(' ');
+      d.innerHTML = `<span style="font-size:28px">${em}</span><span>${rest.join(' ')}</span>`;
+      grid.appendChild(d);
+    });
+    return;
+  }
+  S.gallery.forEach(item => {
+    const d = document.createElement('div');
+    d.className = 'gallery-item';
+    d.innerHTML = `
+      ${S.isAdmin ? `<button class="gallery-del" onclick="event.stopPropagation();delGallery('${item.id}')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:12px;height:12px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>` : ''}
+      <img src="${esc(item.url)}" alt="معرض حُر" loading="lazy" onclick="openLightbox('${esc(item.url)}')">
+      <div class="gallery-overlay"><span class="gallery-label">من جلساتي 📸</span></div>`;
+    grid.appendChild(d);
+  });
+}
+
+function handleGalleryDrop(e) {
+  e.preventDefault();
+  document.getElementById('galleryDrop').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) handleGalleryFile(f);
+}
+
+async function handleGalleryFile(file) {
+  if (!file?.type.startsWith('image/')) { toast('ملف غير مدعوم'); return; }
+  toast('جاري المعالجة...');
+  try {
+    const data = await compress(file, 1024 * 1024);
+    S.galleryPending = data;
+    const bytes = b64Bytes(data);
+    document.getElementById('galleryPreviewImg').src = data;
+    document.getElementById('galleryPreviewName').textContent = file.name;
+    document.getElementById('galleryPreviewSize').textContent = '✅ ' + fmtBytes(bytes);
+    document.getElementById('galleryPreview').style.display = 'flex';
+    toast('جاهزة للإضافة 🖼️');
+  } catch { toast('خطأ في قراءة الصورة ❌'); }
+}
+
+async function addGalleryImg() {
+  if (!S.isAdmin || !S.galleryPending) { toast('اختر صورة أولاً'); return; }
+  const btn = document.getElementById('galleryAddBtn');
+  btn.textContent = 'جاري...'; btn.disabled = true;
+  try {
+    const { error } = await db.from('gallery').insert({ img_url: S.galleryPending });
+    if (error) throw error;
+    S.galleryPending = null;
+    document.getElementById('galleryPreview').style.display = 'none';
+    document.getElementById('galleryFile').value = '';
+    await loadGallery(); toast('تمت الإضافة 🖼️');
+  } catch {
+    S.gallery.unshift({ id: 'l_' + Date.now(), url: S.galleryPending });
+    localStorage.setItem('hor_gallery', JSON.stringify(S.gallery));
+    renderGallery(); S.galleryPending = null;
+    document.getElementById('galleryPreview').style.display = 'none';
+    toast('نسخة محلية 🖼️');
+  } finally { btn.textContent = 'إضافة ＋'; btn.disabled = false; }
+}
+
+async function delGallery(id) {
+  if (!S.isAdmin) return;
+  try {
+    if (!String(id).startsWith('l_')) {
+      const { error } = await db.from('gallery').delete().eq('id', id);
+      if (error) throw error;
+    }
+    S.gallery = S.gallery.filter(g => g.id !== id);
+    renderGallery(); toast('تم الحذف 🗑️');
+  } catch { toast('حدث خطأ ❌'); }
+}
+
+// ════════════════════════════════════════
+// PROMPT IMAGE
+// ════════════════════════════════════════
+function handlePromptDrop(e) {
+  e.preventDefault();
+  document.getElementById('promptDrop').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) handlePromptFile(f);
+}
+
+async function handlePromptFile(file) {
+  if (!file?.type.startsWith('image/')) { toast('ملف غير مدعوم'); return; }
+  toast('جاري المعالجة...');
+  try {
+    const data = await compress(file, 1024 * 1024);
+    document.getElementById('promptImgData').value = data;
+    document.getElementById('promptPreImg').src = data;
+    document.getElementById('promptImgPre').style.display = 'block';
+    const lbl = document.getElementById('promptSizeLabel');
+    lbl.textContent = '✅ ' + fmtBytes(b64Bytes(data)); lbl.style.display = 'block';
+    toast('الصورة جاهزة 🖼️');
+  } catch { toast('خطأ في الصورة ❌'); }
+}
+
+function clearPromptImg() {
+  document.getElementById('promptImgData').value = '';
+  document.getElementById('promptPreImg').src = '';
+  document.getElementById('promptImgPre').style.display = 'none';
+  document.getElementById('promptSizeLabel').style.display = 'none';
+  if (document.getElementById('promptFile')) document.getElementById('promptFile').value = '';
+}
+
+// ════════════════════════════════════════
+// IMAGE UTILITIES
+// ════════════════════════════════════════
+function compress(file, maxBytes) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1800;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) { const r = Math.min(MAX/w, MAX/h); w = Math.round(w*r); h = Math.round(h*r); }
+        const cv = Object.assign(document.createElement('canvas'), { width: w, height: h });
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        const tryQ = q => {
+          const d = cv.toDataURL('image/jpeg', q);
+          if (b64Bytes(d) <= maxBytes || q <= 0.1) res(d); else tryQ(Math.max(q - 0.1, 0.1));
+        };
+        tryQ(0.85);
+      };
+      img.onerror = rej; img.src = e.target.result;
+    };
+    r.onerror = rej; r.readAsDataURL(file);
+  });
+}
+const b64Bytes = d => Math.round((d.length - 'data:image/jpeg;base64,'.length) * 3/4);
+const fmtBytes = b => b < 1024 ? b+'B' : b < 1048576 ? (b/1024).toFixed(1)+'KB' : (b/1048576).toFixed(2)+'MB';
+
+// ════════════════════════════════════════
+// LIGHTBOX
+// ════════════════════════════════════════
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
+  document.body.style.overflow = '';
+}
+function closeLightboxOut(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); }
+
+// ════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+function openTutorialModal() { openModal('tutorialModal'); }
+
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+let _tt;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ════════════════════════════════════════
+// RATING
+// ════════════════════════════════════════
+document.querySelectorAll('.star-btn').forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    const v = +btn.dataset.v;
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('lit', +b.dataset.v <= v));
+    document.getElementById('starLabel').textContent = STAR_LABELS[v] || '';
+  });
+  btn.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('lit', +b.dataset.v <= S.selectedStar));
+    document.getElementById('starLabel').textContent = STAR_LABELS[S.selectedStar] || '';
+  });
+});
+
+function selectStar(v) {
+  S.selectedStar = v;
+  document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('lit', +b.dataset.v <= v));
+  document.getElementById('starLabel').textContent = STAR_LABELS[v] || '';
+  document.getElementById('ratingBtn').disabled = false;
+}
+
+async function submitRating() {
+  if (!S.selectedStar) return;
+  if (localStorage.getItem('hor_rated')) { toast('قيّمت الموقع مسبقاً ✅'); return; }
+  const btn = document.getElementById('ratingBtn');
+  btn.disabled = true; btn.textContent = 'جاري الإرسال...';
+  try { await db.from('ratings').insert({ stars: S.selectedStar }); }
+  catch {
+    const loc = JSON.parse(localStorage.getItem('hor_rloc') || '[]');
+    loc.push({ stars: S.selectedStar });
+    localStorage.setItem('hor_rloc', JSON.stringify(loc));
+  }
+  localStorage.setItem('hor_rated', '1');
+  document.getElementById('thanksBox').style.display = 'block';
+  btn.textContent = 'شكراً! ✅';
+  toast('🌟 شكراً على تقييمك!');
+  document.querySelectorAll('.star-btn').forEach(b => b.style.pointerEvents = 'none');
+  await loadRatings();
+}
+
+async function loadRatings() {
+  const counts = {1:0,2:0,3:0,4:0,5:0};
+  let total = 0, sum = 0;
+  try {
+    const { data, error } = await db.from('ratings').select('stars');
+    if (error) throw error;
+    (data || []).forEach(r => { const s = +r.stars; if (s>=1&&s<=5){counts[s]++;total++;sum+=s;} });
+  } catch {
+    const loc = JSON.parse(localStorage.getItem('hor_rloc') || '[]');
+    loc.forEach(r => { const s = +r.stars; if (s>=1&&s<=5){counts[s]++;total++;sum+=s;} });
+  }
+  const avg = total ? sum/total : 0;
+  document.getElementById('avgNum').textContent = total ? avg.toFixed(1) : '—';
+  const full = Math.round(avg);
+  document.getElementById('avgStars').textContent = '★'.repeat(full) + '☆'.repeat(5-full);
+  document.getElementById('avgCount').textContent = total ? `بناءً على ${total} تقييم` : 'كن الأول في التقييم!';
+  for (let s=1;s<=5;s++) {
+    const bar = document.getElementById('bar'+s);
+    const cnt = document.getElementById('cnt'+s);
+    if (bar) bar.style.width = total ? ((counts[s]/total)*100).toFixed(1)+'%' : '0%';
+    if (cnt) cnt.textContent = counts[s];
+  }
+  if (localStorage.getItem('hor_rated')) {
+    const b = document.getElementById('ratingBtn');
+    if (b) { b.disabled = true; b.textContent = 'قيّمت هذا الموقع ✅'; }
+    document.querySelectorAll('.star-btn').forEach(b => b.style.pointerEvents = 'none');
+    document.getElementById('thanksBox').style.display = 'block';
+  }
+}
+
+// ════════════════════════════════════════
+// INSTALL
+// ════════════════════════════════════════
+const APK_URL = 'app-release.apk';
+const APK_DOWNLOADED_KEY = 'horr_apk_downloaded';
+function hideInstallBtnPermanently() { const btn = document.getElementById('installBtn'); if (btn) btn.style.display = 'none'; }
+function triggerInstall() {
+  try {
+    const a = document.createElement('a');
+    a.href = APK_URL; a.download = 'HorrGallery.apk';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast('📥 جاري تحميل التطبيق...');
+  } catch { toast('حدث خطأ، حاول مجدداً'); return; }
+  try { localStorage.setItem(APK_DOWNLOADED_KEY, '1'); } catch(e) {}
+  hideInstallBtnPermanently();
+}
+if (localStorage.getItem(APK_DOWNLOADED_KEY) === '1') document.addEventListener('DOMContentLoaded', hideInstallBtnPermanently);
+
+// ════════════════════════════════════════
+// KEYBOARD
+// ════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['tutorialModal','loginModal','addModal','deleteModal','detailModal','changePassModal','commentsModal'].forEach(closeModal);
+    closeLightbox();
+  }
+});
+document.getElementById('passInput').addEventListener('keydown', e => { if (e.key === 'Enter') verifyAdmin(); });
+document.getElementById('commentTextInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitComment(); } });
+
+// ════════════════════════════════════════
+// SECURITY
+// ════════════════════════════════════════
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => { if (e.ctrlKey && ['u','s'].includes(e.key.toLowerCase())) e.preventDefault(); });
+
+// ════════════════════════════════════════
+// UTILITY
+// ════════════════════════════════════════
+function esc(s) {
+  const d = document.createElement('div');
+  d.appendChild(document.createTextNode(s || ''));
+  return d.innerHTML;
+}
+
+// ════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════
+boot();
+</script>
+</body>
+</html>
